@@ -40,18 +40,17 @@ public class ShortestJobNext extends Scheduler{
             }
         }
         
-//        System.out.println("Before burst sort:");
-//        ready.display();
+        hold.sortBy("arrivalTime");
+
         ProcessControlBlock shortest;
         if(ready.isEmpty()){ // If processes hasnt arrived et
-            this.startTime = hold.peek().getArrivalTime();
-            shortest = setReadyLeastBurst(hold);
+            this.startTime = hold.peek().getArrivalTime(); // CPU is idle: jump to the next process arrival time
+            shortest = setReadyLeastBurst(hold); // Recursion with guaranteed shortest process
         }else{
             ready.sortBy("burstTime");
             shortest = ready.dequeue(); // Process among valid proceses that has lowest burst time
         }
-//        System.out.println("After burst sort:");
-//        ready.display();
+
         while(!ready.isEmpty()){
             hold.enqueue(ready.dequeue()); // Restore valid but not the sshortest processes back to the hold queue
         }
@@ -63,11 +62,6 @@ public class ShortestJobNext extends Scheduler{
         running.enqueue(process);
         
         process.setStartTime(this.startTime); // Update the accounts 
-//        System.out.println(
-//            "RUNNING: " + process.getProcessName() +
-//            " | Start: " + process.getStartTime() +
-//            " | Wait: " + process.getWaitingTime()
-//        );
         this.startTime += process.getBurstTime();
         this.totalWaitingTime += process.getWaitingTime();
     }

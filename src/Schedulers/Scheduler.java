@@ -15,7 +15,7 @@ public abstract class Scheduler {
     protected double averageWaitingTime;
     protected double averageTurnAroundTime;
     
-    protected int startTime;
+    protected int startTime; // has no getters and setters yet
     
     protected int totalWaitingTime;
     protected int totalTurnAroundTime;

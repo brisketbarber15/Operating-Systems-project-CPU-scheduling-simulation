@@ -46,7 +46,8 @@ public abstract class Queue {
     
     public ProcessControlBlock dequeue(){
         if(isEmpty()){
-            return null;
+            javax.swing.JOptionPane.showMessageDialog(null, "Error: Using dequeue into empty queue!");
+            System.exit(1);
         }
         ProcessControlBlock process = front.data;
         front = front.next;
@@ -75,6 +76,10 @@ public abstract class Queue {
     }
     
     public ProcessControlBlock peek(){
+        if(isEmpty()){
+            javax.swing.JOptionPane.showMessageDialog(null, "Error: Peeking into empty queue!");
+            System.exit(1);
+        }
         return front.data;
     }
 }

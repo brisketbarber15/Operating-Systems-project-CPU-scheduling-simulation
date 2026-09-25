@@ -14,7 +14,7 @@ public class FirstComeFirstServed extends Scheduler{
     public void schedule(HoldQueue hold){
         int numProcess = hold.getSize();
         
-        ReadyQueue ready = setReadyQueue(hold, numProcess); // Transfer propceses from hold queue to ready queue
+        ReadyQueue ready = setReadyQueue(hold); // Transfer propceses from hold queue to ready queue
         RunningQueue running = new RunningQueue();
         
         for(int i=0; i<numProcess; i++){ // Process proceses one by one
@@ -26,8 +26,10 @@ public class FirstComeFirstServed extends Scheduler{
         this.setAverageWaitingTime();
     }
     
-    private ReadyQueue setReadyQueue(HoldQueue hold, int numProcess){
+    private ReadyQueue setReadyQueue(HoldQueue hold){
+        int numProcess = hold.getSize();
         ReadyQueue ready = new ReadyQueue();
+        
         hold.sortBy("arrivalTime");
         
         for(int i=0; i<numProcess; i++){

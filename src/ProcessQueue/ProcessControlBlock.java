@@ -51,7 +51,8 @@ public class ProcessControlBlock {
                 return;
             }
         }
-        throw new java.util.InputMismatchException("Status not recognized.");
+        javax.swing.JOptionPane.showMessageDialog(null, "Error: Status is unrecognized!");
+        System.exit(1);
     }
     
     public String getProcessName(){
@@ -76,7 +77,8 @@ public class ProcessControlBlock {
     
     public void setStartTime(int startTime){
         if(startTime < 0){
-            return;
+            javax.swing.JOptionPane.showMessageDialog(null, "Error: Invalid start tome!");
+            System.exit(1);
         }
         
         this.startTime = startTime;

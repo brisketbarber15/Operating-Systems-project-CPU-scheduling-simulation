@@ -14,10 +14,10 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) { 
         // TODO code application logic here
-        int[] inputArrivalTime = {2, 5, 16, 0, 4};
-        int[] inputBurstTime = {6, 2, 8, 3, 4};
+        int[] inputArrivalTime = {0, 5, 16, 2, 8};
+        int[] inputBurstTime = {3, 4, 8, 3, 2};
         
         HoldQueue hold = new HoldQueue();
         
@@ -30,16 +30,45 @@ public class Main {
             hold.enqueue(process);
         }
         
-//        FirstComeFirstServed fcfs = new FirstComeFirstServed();
-//        fcfs.schedule(hold);
-//        display(fcfs);
+        FirstComeFirstServed fcfs = new FirstComeFirstServed();
+        fcfs.schedule(hold);
+        displayFCFS(fcfs);
+        
+        for(int i=0; i<inputArrivalTime.length; i++){
+            ProcessControlBlock process = new ProcessControlBlock(
+                    "p"+(i+1), 
+                    inputArrivalTime[i], 
+                    inputBurstTime[i]
+            );
+            hold.enqueue(process);
+        }
 
         ShortestJobNext sjn = new ShortestJobNext();
         sjn.schedule(hold);
-        display(sjn);
+        displaySJN(sjn);
     }
     
-    public static void display(ShortestJobNext sjn){ // Change nio types kung magddisplay kayo
+    public static void displayFCFS(FirstComeFirstServed fcfs){ 
+        FinishedQueue ganttChart = fcfs.getGanttChart();
+        
+        String[] header = {"ProcessName", "ArrivalTime", "BurstTime", "StartTime", "WaitTime"};
+        System.out.printf("%-12s %-18s %-15s %-15s %3s%n", header[0], header[1], header[2], header[3], header[4]);
+        
+        for(int i=0; i<5; i++){
+            ProcessControlBlock p = ganttChart.dequeue();
+            System.out.printf(
+                    "%-12s %-18s %-15s %-15s %1s%n",
+                    p.getProcessName(),
+                    p.getArrivalTime(), 
+                    p.getBurstTime(), 
+                    p.getStartTime(),
+                    p.getWaitingTime()
+            );
+        }
+        System.out.println("Average waiting time: " + fcfs.getAverageWaitingTime());
+    }
+    
+    public static void displaySJN(ShortestJobNext sjn){ 
         FinishedQueue ganttChart = sjn.getGanttChart();
         
         String[] header = {"ProcessName", "ArrivalTime", "BurstTime", "StartTime", "WaitTime"};

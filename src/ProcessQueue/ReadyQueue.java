@@ -40,8 +40,10 @@ public class ReadyQueue extends Queue{
         }else if(by.equals("burstTime")){
             return sortedMergeB(left, right);
         }else{
-            return front;
+            javax.swing.JOptionPane.showMessageDialog(null, "Error: Unrecognized sorting method!");
+            System.exit(1);
         }
+        return null;
     }
     
     private Node sortedMergeA(Node left, Node right){
@@ -67,10 +69,19 @@ public class ReadyQueue extends Queue{
         if(left.data.getBurstTime() <= right.data.getBurstTime()){
             result = left;
             result.next = sortedMergeB(left.next, right);
-        }else{
+        }else if(left.data.getBurstTime() >= right.data.getBurstTime()){
             result = right;
             result.next = sortedMergeB(left, right.next);
+        }else{
+            if(left.data.getArrivalTime() <= right.data.getArrivalTime()){ // If same burst time, sort by arival time
+                result = left;
+                result.next = sortedMergeB(left.next, right);
+            }else{
+                result = right;
+                result.next = sortedMergeB(left, right.next);
+            }
         }
+        
         return result;
     }
     
