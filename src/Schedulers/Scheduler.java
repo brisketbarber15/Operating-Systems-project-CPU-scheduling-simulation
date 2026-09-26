@@ -10,31 +10,44 @@ package Schedulers;
  */
 import ProcessQueue.*;
 public abstract class Scheduler {
-    protected FinishedQueue ganttChart;
+    protected FinishedQueue finishedProcesses;
+//    protected FinishedQueue ganttChart; // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    protected GanttChart[] ganttChart = new GanttChart[100];
+    protected int ganttChartIndex;
     
     protected double averageWaitingTime;
     protected double averageTurnAroundTime;
     
-    protected int startTime; // has no getters and setters yet
+    protected int currentTime; // has no getters and setters yet
     
     protected int totalWaitingTime;
     protected int totalTurnAroundTime;
     
-    public Scheduler(){
-        this.ganttChart = new FinishedQueue();
+    protected int timeQuantum;
+    
+    public Scheduler(int timeQuantum){
+        this.finishedProcesses = new FinishedQueue();
+//        this.ganttChart = new FinishedQueue();
+        this.ganttChartIndex = 0;
         
         this.averageTurnAroundTime = 0.0;
         this.averageWaitingTime = 0.0;
         
-        this.startTime = 0;
+        this.currentTime = 0;
         
         this.totalWaitingTime = 0;
         this.totalTurnAroundTime = 0;
+        
+        this.timeQuantum = timeQuantum;
     }
     
     public abstract void schedule(HoldQueue hold);
     
-    public FinishedQueue getGanttChart(){
+    public FinishedQueue getFinishedProcesses(){
+        return this.finishedProcesses;
+    }
+    
+    public GanttChart[] getGanttChart(){
         return this.ganttChart;
     }
     
@@ -43,7 +56,7 @@ public abstract class Scheduler {
     }
     
     protected void setAverageWaitingTime(){
-        int numProcess = this.ganttChart.getSize();
+        int numProcess = this.finishedProcesses.getSize();
         
         if(numProcess == 0){
             this.averageWaitingTime = 0;
@@ -56,7 +69,7 @@ public abstract class Scheduler {
     }
     
     public void setAverageTurnAroundTime(){
-        int numProcess = this.ganttChart.getSize();
+        int numProcess = this.finishedProcesses.getSize();
         
         if(numProcess == 0){
             this.averageTurnAroundTime = 0;

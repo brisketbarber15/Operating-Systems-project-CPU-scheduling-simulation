@@ -10,6 +10,10 @@ package Schedulers;
  */
 import ProcessQueue.*;
 public class ShortestJobNext extends Scheduler{
+    public ShortestJobNext(){
+        super(0);
+    }
+    
     @Override
     public void schedule(HoldQueue hold){
         int numProcess = hold.getSize();
@@ -32,7 +36,7 @@ public class ShortestJobNext extends Scheduler{
         hold.sortBy("arrivalTime");
         for(int i=0; i<numProcess; i++){
             ProcessControlBlock process = hold.dequeue();
-            if(process.getArrivalTime() <= this.startTime){ // Transfering hold-status processes to ready queue if they've already arrived
+            if(process.getArrivalTime() <= this.currentTime){ // Transfering hold-status processes to ready queue if they've already arrived
                 ready.enqueue(process);
             }else{
                 hold.enqueue(process); // Restore processes that hasnt arrived yet back to hold queue
@@ -44,7 +48,7 @@ public class ShortestJobNext extends Scheduler{
 
         ProcessControlBlock shortest;
         if(ready.isEmpty()){ // If processes hasnt arrived et
-            this.startTime = hold.peek().getArrivalTime(); // CPU is idle: jump to the next process arrival time
+            this.currentTime = hold.peek().getArrivalTime(); // CPU is idle: jump to the next process arrival time
             shortest = setReadyLeastBurst(hold); // Recursion with guaranteed shortest process
         }else{
             ready.sortBy("burstTime");
@@ -61,12 +65,12 @@ public class ShortestJobNext extends Scheduler{
     private void run(RunningQueue running, ProcessControlBlock process){
         running.enqueue(process);
         
-        process.setStartTime(this.startTime); // Update the accounts 
-        this.startTime += process.getBurstTime();
+        process.setStartTime(this.currentTime); // Update the accounts 
+        this.currentTime += process.getBurstTime();
         this.totalWaitingTime += process.getWaitingTime();
     }
     
     private void finished(ProcessControlBlock process){
-        this.ganttChart.enqueue(process);
+        this.finishedProcesses.enqueue(process);
     }
 }

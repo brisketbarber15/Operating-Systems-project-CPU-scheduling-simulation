@@ -10,6 +10,10 @@ package Schedulers;
  */
 import ProcessQueue.*;
 public class FirstComeFirstServed extends Scheduler{
+    public FirstComeFirstServed(){
+        super(0);
+    }
+    
     @Override
     public void schedule(HoldQueue hold){
         int numProcess = hold.getSize();
@@ -42,16 +46,16 @@ public class FirstComeFirstServed extends Scheduler{
     private void run(RunningQueue running, ProcessControlBlock process){
         running.enqueue(process);
         
-        if(process.getArrivalTime() > this.startTime){ // If there is no immediate process after last process then the scheduler waits
-            this.startTime += (process.getArrivalTime() - this.startTime);
+        if(process.getArrivalTime() > this.currentTime){ // If there is no immediate process after last process then the scheduler waits
+            this.currentTime += (process.getArrivalTime() - this.currentTime);
         }
         
-        process.setStartTime(this.startTime); // Update the accounts 
-        this.startTime += process.getBurstTime();
+        process.setStartTime(this.currentTime); // Update the accounts 
+        this.currentTime += process.getBurstTime();
         this.totalWaitingTime += process.getWaitingTime();
     }
     
     private void finished(ProcessControlBlock process){
-        this.ganttChart.enqueue(process);
+        this.finishedProcesses.enqueue(process);
     }
 }

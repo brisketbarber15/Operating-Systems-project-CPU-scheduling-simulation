@@ -18,6 +18,9 @@ public class ProcessControlBlock {
     private int startTime;
     private int waitingTime;
     
+    private int tempArrivalTime; // For rr 
+    private int tempBurstTime;
+    
     private int completionTime; // Preeemptives
     private int turnAroundTime;
     
@@ -29,6 +32,9 @@ public class ProcessControlBlock {
         this.burstTime = burst;
         this.startTime = 0;
         this.waitingTime = 0;
+        
+        this.tempArrivalTime = arrival; 
+        this.tempBurstTime = burst;
         
         this.completionTime = 0;
         this.turnAroundTime = 0;
@@ -63,8 +69,31 @@ public class ProcessControlBlock {
         return this.arrivalTime;
     }
     
+    public void setUpdatedArrivalTime(int arrivalTime){ // For RR 
+        this.tempArrivalTime = arrivalTime; 
+    } 
+    
+    public int getUpdatedArrivalTime(){ 
+        return this.tempArrivalTime; 
+    }
+    
     public int getBurstTime(){
         return this.burstTime;
+    }
+    
+    public int setRemainingBurstTimeReturnDeduction(int timeQuantum){ // For RR 
+        if(this.tempBurstTime > timeQuantum){ 
+            this.tempBurstTime -= timeQuantum; 
+            return timeQuantum; 
+        }else{ 
+            int temp = this.tempBurstTime; 
+            this.tempBurstTime = 0; 
+            return temp; 
+        } 
+    } 
+    
+    public int getRemainingBurstTime(){ 
+        return this.tempBurstTime; 
     }
     
     public int getStartTime(){
@@ -82,19 +111,27 @@ public class ProcessControlBlock {
         }
         
         this.startTime = startTime;
-        setWaitingTime();
+        setWaitingTime("nonPreemptive");
     }
     
-    private void setWaitingTime(){
-        this.waitingTime = this.startTime - this.arrivalTime;
+    private void setWaitingTime(String by){
+        if(by.equals("nonPreemptive")){
+            this.waitingTime = this.startTime - this.arrivalTime;
+        }else if(by.equals("preemptive")){
+            this.waitingTime = this.turnAroundTime - this.burstTime;
+        }else{
+            javax.swing.JOptionPane.showMessageDialog(null, "Error: Waiting time method uis unrecognized!");
+            System.exit(1);
+        }
     }
     
     public int getCompletionTime(){
         return this.completionTime;
     }
     
-    public void setCompletionTime(int lastStartTime, int residualBurstTime){
-        this.completionTime = lastStartTime + residualBurstTime;
+    public void setCompletionTime(int completionTime){
+        this.completionTime = completionTime;
+        this.setTurnAroundTime();
     }
     
     public int getTurnAroundTime(){
@@ -103,6 +140,7 @@ public class ProcessControlBlock {
     
     public void setTurnAroundTime(){
         this.turnAroundTime = this.completionTime - this.arrivalTime;
+        this.setWaitingTime("preemptive");
     }
 }
 
