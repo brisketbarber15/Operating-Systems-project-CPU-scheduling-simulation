@@ -18,44 +18,68 @@ public class FirstComeFirstServed extends Scheduler{
     public void schedule(HoldQueue hold){
         int numProcess = hold.getSize();
         
-        ReadyQueue ready = setReadyQueue(hold); // Transfer propceses from hold queue to ready queue
+        ReadyQueue ready = new ReadyQueue();
         RunningQueue running = new RunningQueue();
         
         for(int i=0; i<numProcess; i++){ // Process proceses one by one
-            ProcessControlBlock process = ready.dequeue(); 
-            
-            run(running, process); // Transfer the process from ready queue to running queue and run
-            finished(running.dequeue()); // Trasfer the process from running queue to finished queue (Gantt Chart)
+            setReadyQueue(hold, ready);
+            run(running, ready); // Transfer the process from ready queue to running queue and run
+            finished(running); // Trasfer the process from running queue to finished queue (Gantt Chart)
         }
         this.setAverageWaitingTime();
     }
     
-    private ReadyQueue setReadyQueue(HoldQueue hold){
-        int numProcess = hold.getSize();
-        ReadyQueue ready = new ReadyQueue();
+    private void setReadyQueue(HoldQueue hold, ReadyQueue ready){
+        admitArrivedProcesses(hold, ready);
         
-        hold.sortBy("arrivalTime");
-        
-        for(int i=0; i<numProcess; i++){
-            ready.enqueue(hold.dequeue());
+        if(ready.isEmpty()){ // If processes hasnt arrived et
+            hold.sortBy("arrivalTime");
+            
+            this.ganttChart[this.ganttChartIndex++] = new GanttChart( // Updates gantt chart for cpu idle time
+                    "Idle",
+                    this.currentTime,
+                    hold.peek().getArrivalTime()
+            );
+            
+            this.currentTime = hold.peek().getArrivalTime(); // CPU is idle: jump to the next process arrival time
+            setReadyQueue(hold, ready); // Recursion with guaranteed shortest process
         }
         
-        return ready;
+        ready.sortBy("arrivalTime");
     }
     
-    private void run(RunningQueue running, ProcessControlBlock process){
+    private void admitArrivedProcesses(HoldQueue hold, ReadyQueue ready){
+        int numProcess = hold.getSize();
+        
+        hold.sortBy("arrivalTime");
+        for(int i=0; i<numProcess; i++){
+            ProcessControlBlock process = hold.dequeue();
+            if(process.getArrivalTime() <= this.currentTime){
+                ready.enqueue(process);
+            }else{
+                hold.enqueue(process);
+                break;
+            }
+        }
+    }
+    
+    private void run(RunningQueue running, ReadyQueue ready){
+        ProcessControlBlock process = ready.dequeue();
+        
         running.enqueue(process);
         
-        if(process.getArrivalTime() > this.currentTime){ // If there is no immediate process after last process then the scheduler waits
-            this.currentTime += (process.getArrivalTime() - this.currentTime);
-        }
+        this.ganttChart[this.ganttChartIndex++] = new GanttChart( // Updates gantt chart 
+                process.getProcessName(),
+                this.currentTime,
+                this.currentTime + process.getBurstTime()
+        );
         
         process.setStartTime(this.currentTime); // Update the accounts 
         this.currentTime += process.getBurstTime();
         this.totalWaitingTime += process.getWaitingTime();
     }
     
-    private void finished(ProcessControlBlock process){
-        this.finishedProcesses.enqueue(process);
+    private void finished(RunningQueue running){
+        this.finishedProcesses.enqueue(running.dequeue());
     }
 }

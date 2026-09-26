@@ -19,6 +19,10 @@ public class Main {
     public static void main(String[] args) { 
         // TODO code application logic here
         
+        /** Schedulers accept HoldQueue formatted input
+         * Input validation must happen before converting to HoldQueue and be passed to schedulers
+         */ 
+        
         HoldQueue hold = new HoldQueue();
         
 //        for(int i=0; i<inputArrivalTime.length; i++){
@@ -33,7 +37,7 @@ public class Main {
 //        FirstComeFirstServed fcfs = new FirstComeFirstServed();
 //        fcfs.schedule(hold);
 //        displayFCFS(fcfs);
-//        
+        
 //        for(int i=0; i<inputArrivalTime.length; i++){
 //            ProcessControlBlock process = new ProcessControlBlock(
 //                    "p"+(i+1), 

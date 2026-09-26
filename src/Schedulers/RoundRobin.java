@@ -32,6 +32,14 @@ public class RoundRobin extends Scheduler{
         admitArrivedProcesses(hold, ready);
         
         if(ready.isEmpty()){ // If processes hasnt arrived et
+            hold.sortBy("arrivalTime");
+            
+            this.ganttChart[this.ganttChartIndex++] = new GanttChart( // Updates gantt chart for cpu idle time
+                    "Idle",
+                    this.currentTime,
+                    hold.peek().getArrivalTime()
+            );
+            
             this.currentTime = hold.peek().getArrivalTime(); // CPU is idle: jump to the next process arrival time
             setReadyQueue(hold, ready); // Recursion with guaranteed ready process
         }
@@ -74,7 +82,7 @@ public class RoundRobin extends Scheduler{
             process.setCompletionTime(this.currentTime);
             this.finishedProcesses.enqueue(process);
         }else{
-            ready.enqueue(process);
+            ready.enqueue(process); // Send the unfinished process back to the end of the queue
         }
     }
     
