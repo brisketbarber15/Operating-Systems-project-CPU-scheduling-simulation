@@ -17,9 +17,11 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.BorderFactory;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Dimension;
 import ProcessQueue.*;
 import Schedulers.*;
 public class FCFSJFrame extends javax.swing.JFrame {
@@ -30,12 +32,21 @@ public class FCFSJFrame extends javax.swing.JFrame {
     private FirstComeFirstServed fcfs;
     private ShortestJobNext sjn;
     private RoundRobin rr;
-
+    private DefaultTableModel tableModel;
+    private JTable tableForInput;
     /**
      * Creates new form FCFSJFrame
      */
     public FCFSJFrame() {
         initComponents();
+        
+        String[] columns = {
+                "Process Name",
+                "Arrival Time",
+                "Burst Time"
+            };
+        tableModel = new DefaultTableModel(columns, 0);
+        tableForInput = new JTable(tableModel);
     }
 
     /**
@@ -60,14 +71,20 @@ public class FCFSJFrame extends javax.swing.JFrame {
         fcfsbtn = new javax.swing.JButton();
         sjnbtn = new javax.swing.JButton();
         rrbtn = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        restart = new javax.swing.JButton();
+        terminate = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
         output = new javax.swing.JPanel();
         dynamicOutput = new javax.swing.JScrollPane();
+        input = new javax.swing.JPanel();
+        dynamicInput = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         config.setBorder(javax.swing.BorderFactory.createTitledBorder("Process Configuration"));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel1.setText("Add Process");
 
         jLabel2.setText("Proces Name:");
@@ -79,11 +96,11 @@ public class FCFSJFrame extends javax.swing.JFrame {
         arrivalTime.addActionListener(this::arrivalTimeActionPerformed);
 
         insert.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        insert.setText("Insert");
+        insert.setText("Add");
         insert.addActionListener(this::insertActionPerformed);
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel5.setText("Solve With");
+        jLabel5.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel5.setText("Schedule With");
 
         fcfsbtn.setText("First Come First Served");
         fcfsbtn.addActionListener(this::fcfsbtnActionPerformed);
@@ -94,26 +111,39 @@ public class FCFSJFrame extends javax.swing.JFrame {
         rrbtn.setText("Round Robin");
         rrbtn.addActionListener(this::rrbtnActionPerformed);
 
+        restart.setText("Restart");
+        restart.addActionListener(this::restartActionPerformed);
+
+        terminate.setText("End Program");
+        terminate.addActionListener(this::terminateActionPerformed);
+
         javax.swing.GroupLayout configLayout = new javax.swing.GroupLayout(config);
         config.setLayout(configLayout);
         configLayout.setHorizontalGroup(
             configLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(configLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(configLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(fcfsbtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(insert, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2)
-                    .addComponent(arrivalTime, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-                    .addComponent(processName)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(burstTime, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(sjnbtn, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-                    .addComponent(rrbtn, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(configLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(configLayout.createSequentialGroup()
+                        .addGroup(configLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(restart, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(fcfsbtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(insert, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2)
+                            .addComponent(arrivalTime, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                            .addComponent(processName)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(burstTime, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(sjnbtn, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                            .addComponent(rrbtn, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                            .addComponent(terminate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jSeparator2))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         configLayout.setVerticalGroup(
             configLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -128,21 +158,29 @@ public class FCFSJFrame extends javax.swing.JFrame {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(arrivalTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(burstTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
+                .addGap(24, 24, 24)
                 .addComponent(insert, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(restart, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fcfsbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(sjnbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(rrbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(terminate, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12))
         );
 
         output.setBorder(javax.swing.BorderFactory.createTitledBorder("Output"));
@@ -153,12 +191,31 @@ public class FCFSJFrame extends javax.swing.JFrame {
             outputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(outputLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(dynamicOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE))
+                .addComponent(dynamicOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
+                .addContainerGap())
         );
         outputLayout.setVerticalGroup(
             outputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(outputLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, outputLayout.createSequentialGroup()
                 .addComponent(dynamicOutput)
+                .addContainerGap())
+        );
+
+        input.setBorder(javax.swing.BorderFactory.createTitledBorder("Input"));
+
+        javax.swing.GroupLayout inputLayout = new javax.swing.GroupLayout(input);
+        input.setLayout(inputLayout);
+        inputLayout.setHorizontalGroup(
+            inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(inputLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(dynamicInput)
+                .addContainerGap())
+        );
+        inputLayout.setVerticalGroup(
+            inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(inputLayout.createSequentialGroup()
+                .addComponent(dynamicInput, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -170,16 +227,21 @@ public class FCFSJFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(config, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(output, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(output, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(input, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(output, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(config, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(config, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(input, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(output, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -209,6 +271,45 @@ public class FCFSJFrame extends javax.swing.JFrame {
             processName.setText("");
             arrivalTime.setText("");
             burstTime.setText("");
+            
+            tableModel.addRow(new Object[]{
+                pName,
+                aTime,
+                bTime
+            });
+            
+            JLabel title = new JLabel();
+            title.setText("Input List");
+            title.setFont(new Font("Arial", Font.PLAIN, 18));
+            
+            JPanel dynamicInput = new JPanel();
+            dynamicInput.setLayout(new BorderLayout());
+            
+            dynamicInput.add(
+                    title,
+                    BorderLayout.NORTH
+            );
+            
+            dynamicInput.add(
+                    new JScrollPane(tableForInput),
+                    BorderLayout.CENTER
+            );
+            
+            input.removeAll();
+
+            input.setLayout(new BorderLayout());
+
+            input.add(
+                    new JScrollPane(dynamicInput),
+                    BorderLayout.CENTER
+            );
+            
+            Dimension currentSize = input.getSize();
+
+            input.setPreferredSize(currentSize);
+
+            input.revalidate();
+            input.repaint();
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Please enter a valid input!");
         }
@@ -216,6 +317,10 @@ public class FCFSJFrame extends javax.swing.JFrame {
 
     private void fcfsbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fcfsbtnActionPerformed
         // TODO add your handling code here:
+        if(hold.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter processes first!");
+            return;
+        }
         fcfs = new FirstComeFirstServed();
         fcfs.schedule(hold);
 
@@ -250,9 +355,17 @@ public class FCFSJFrame extends javax.swing.JFrame {
         
         JLabel method = new JLabel();
         method.setText("First Come First Served");
-        method.setFont(new Font("Arial", Font.PLAIN, 18));
+        method.setFont(new Font("Arial", Font.BOLD, 20));
 
-        JPanel ganttPanel = new JPanel(new GridLayout(1, 0, 0, 0));
+        JPanel ganttPanel = new JPanel(new GridLayout(1, 0));
+        JPanel timePanel = new JPanel(new GridLayout(1, 0));
+
+        JLabel startLabel = new JLabel(
+                String.valueOf(ganttChart[0].getStartTime()),
+                SwingConstants.LEFT
+        );
+
+        timePanel.add(startLabel);
 
         for(GanttChart entry : ganttChart){
             if (entry == null) {
@@ -268,6 +381,13 @@ public class FCFSJFrame extends javax.swing.JFrame {
             );
 
             ganttPanel.add(cell);
+            
+            JLabel timeLabel = new JLabel(
+                    String.valueOf(entry.getCompletionTime()),
+                    SwingConstants.CENTER
+            );
+
+            timePanel.add(timeLabel);
         }
 
         JPanel dynamicOutput = new JPanel();
@@ -277,20 +397,66 @@ public class FCFSJFrame extends javax.swing.JFrame {
                 method,
                 BorderLayout.NORTH
         );
-
-        dynamicOutput.add(
-                new JScrollPane(table),
-                BorderLayout.CENTER
+        
+        // =======================================
+        
+        JPanel outputListPanel = new JPanel(new BorderLayout());
+        
+        JLabel ol = new JLabel();
+        ol.setText("Output List");
+        method.setFont(new Font("Arial", Font.PLAIN, 12));
+        
+        outputListPanel.add(
+                ol,
+                BorderLayout.NORTH
         );
 
+        outputListPanel.add(
+                new JScrollPane(table),
+                BorderLayout.SOUTH
+        );
+        
         dynamicOutput.add(
-                new JScrollPane(
+                outputListPanel,
+                BorderLayout.SOUTH
+        );
+        
+        // =======================================================
+        JPanel chartPanel = new JPanel(new BorderLayout());
+        
+        JLabel gc = new JLabel();
+        gc.setText("Gantt Chart");
+        method.setFont(new Font("Arial", Font.PLAIN, 12));
+        
+        chartPanel.add(
+                gc,
+                BorderLayout.NORTH
+        );
+        
+        chartPanel.add(new JScrollPane(
                         ganttPanel,
+                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                ),
+                BorderLayout.CENTER
+        );
+        
+        chartPanel.add(new JScrollPane(
+                        timePanel,
                         JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
                 ),
                 BorderLayout.SOUTH
         );
+
+        dynamicOutput.add(
+                chartPanel,
+                BorderLayout.CENTER
+        );
+        // ===============================================================
+        Dimension currentSize = output.getSize();
+
+        output.setPreferredSize(currentSize);
 
         output.removeAll();
 
@@ -307,6 +473,10 @@ public class FCFSJFrame extends javax.swing.JFrame {
 
     private void sjnbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sjnbtnActionPerformed
         // TODO add your handling code here:
+        if(hold.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter processes first!");
+            return;
+        }
         sjn = new ShortestJobNext();
         sjn.schedule(hold);
         
@@ -343,7 +513,15 @@ public class FCFSJFrame extends javax.swing.JFrame {
         method.setText("Shortest Job Next");
         method.setFont(new Font("Arial", Font.PLAIN, 18));
 
-        JPanel ganttPanel = new JPanel(new GridLayout(1, 0, 0, 0));
+        JPanel ganttPanel = new JPanel(new GridLayout(1, 0));
+        JPanel timePanel = new JPanel(new GridLayout(1, 0));
+
+        JLabel startLabel = new JLabel(
+                String.valueOf(ganttChart[0].getStartTime()),
+                SwingConstants.LEFT
+        );
+
+        timePanel.add(startLabel);
 
         for(GanttChart entry : ganttChart){
             if (entry == null) {
@@ -359,6 +537,13 @@ public class FCFSJFrame extends javax.swing.JFrame {
             );
 
             ganttPanel.add(cell);
+            
+            JLabel timeLabel = new JLabel(
+                    String.valueOf(entry.getCompletionTime()),
+                    SwingConstants.CENTER
+            );
+
+            timePanel.add(timeLabel);
         }
 
         JPanel dynamicOutput = new JPanel();
@@ -374,14 +559,32 @@ public class FCFSJFrame extends javax.swing.JFrame {
                 BorderLayout.CENTER
         );
 
-        dynamicOutput.add(
-                new JScrollPane(
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        
+        bottomPanel.add(new JScrollPane(
                         ganttPanel,
+                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                ),
+                BorderLayout.CENTER
+        );
+        
+        bottomPanel.add(new JScrollPane(
+                        timePanel,
                         JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
                 ),
                 BorderLayout.SOUTH
         );
+
+        dynamicOutput.add(
+                bottomPanel,
+                BorderLayout.SOUTH
+        );
+        
+        Dimension currentSize = output.getSize();
+
+        output.setPreferredSize(currentSize);
 
         output.removeAll();
 
@@ -398,122 +601,165 @@ public class FCFSJFrame extends javax.swing.JFrame {
 
     private void rrbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rrbtnActionPerformed
         // TODO add your handling code here:
+        if(hold.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter processes first!");
+            return;
+        }
         try{
             int tq = Integer.parseInt(JOptionPane.showInputDialog("Enter time quantum"));
             rr = new RoundRobin(tq);
             rr.schedule(hold);
             
             FinishedQueue finishedProcesses = rr.getFinishedProcesses();
-        GanttChart[] ganttChart = rr.getGanttChart();
+            GanttChart[] ganttChart = rr.getGanttChart();
 
-        String[] columns = {
-            "Process Name",
-            "Arrival Time",
-            "Burst Time",
-            "Completion Time",
-            "Turn Around Time",
-            "Waiting Time"
-        };
+            String[] columns = {
+                "Process Name",
+                "Arrival Time",
+                "Burst Time",
+                "Completion Time",
+                "Turn Around Time",
+                "Waiting Time"
+            };
 
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        JTable table = new JTable(model);
+            DefaultTableModel model = new DefaultTableModel(columns, 0);
+            JTable table = new JTable(model);
 
-        int numProcess = finishedProcesses.getSize();
-        for(int i=0; i<numProcess; i++){
-            ProcessControlBlock process = finishedProcesses.dequeue();
+            int numProcess = finishedProcesses.getSize();
+            for(int i=0; i<numProcess; i++){
+                ProcessControlBlock process = finishedProcesses.dequeue();
 
-            model.addRow(new Object[]{
-                process.getProcessName(),
-                process.getArrivalTime(),
-                process.getBurstTime(),
-                process.getCompletionTime(),
-                process.getTurnAroundTime(),
-                process.getWaitingTime()
-            });
-            
-            finishedProcesses.enqueue(process);
-        }
-        
-        JLabel method = new JLabel();
-        method.setText("Round Robin");
-        method.setFont(new Font("Arial", Font.PLAIN, 18));
+                model.addRow(new Object[]{
+                    process.getProcessName(),
+                    process.getArrivalTime(),
+                    process.getBurstTime(),
+                    process.getCompletionTime(),
+                    process.getTurnAroundTime(),
+                    process.getWaitingTime()
+                });
 
-        JPanel ganttPanel = new JPanel(new GridLayout(1, 0, 0, 0));
-
-        for(GanttChart entry : ganttChart){
-            if (entry == null) {
-                break;
+                finishedProcesses.enqueue(process);
             }
 
-            JLabel cell = new JLabel(
-                    entry.getProcessName(),
+            JLabel method = new JLabel();
+            method.setText("Round Robin");
+            method.setFont(new Font("Arial", Font.PLAIN, 18));
+
+            JPanel ganttPanel = new JPanel(new GridLayout(1, 0));
+            JPanel timePanel = new JPanel(new GridLayout(1, 0));
+
+            JLabel startLabel = new JLabel(
+                    String.valueOf(ganttChart[0].getStartTime()),
+                    SwingConstants.LEFT
+            );
+
+            timePanel.add(startLabel);
+
+            for(GanttChart entry : ganttChart){
+                if (entry == null) {
+                    break;
+                }
+
+                JLabel cell = new JLabel(
+                        entry.getProcessName(),
+                        SwingConstants.CENTER
+                );
+                cell.setBorder(
+                        BorderFactory.createLineBorder(Color.BLACK)
+                );
+
+                ganttPanel.add(cell);
+                
+                JLabel timeLabel = new JLabel(
+                    String.valueOf(entry.getCompletionTime()),
                     SwingConstants.CENTER
-            );
-            cell.setBorder(
-                    BorderFactory.createLineBorder(Color.BLACK)
+                );
+
+                timePanel.add(timeLabel);
+            }
+
+            JPanel dynamicOutput = new JPanel();
+            dynamicOutput.setLayout(new BorderLayout());
+
+            dynamicOutput.add(
+                    method,
+                    BorderLayout.NORTH
             );
 
-            ganttPanel.add(cell);
-        }
+            dynamicOutput.add(
+                    new JScrollPane(table),
+                    BorderLayout.SOUTH
+            );
 
-        JPanel dynamicOutput = new JPanel();
-        dynamicOutput.setLayout(new BorderLayout());
+            JPanel bottomPanel = new JPanel(new BorderLayout());
         
-        dynamicOutput.add(
-                method,
-                BorderLayout.NORTH
-        );
+            bottomPanel.add(new JScrollPane(
+                            ganttPanel,
+                            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                    ),
+                    BorderLayout.CENTER
+            );
 
-        dynamicOutput.add(
-                new JScrollPane(table),
-                BorderLayout.CENTER
-        );
+            bottomPanel.add(new JScrollPane(
+                            timePanel,
+                            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                    ),
+                    BorderLayout.SOUTH
+            );
 
-        dynamicOutput.add(
-                new JScrollPane(
-                        ganttPanel,
-                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-                ),
-                BorderLayout.SOUTH
-        );
+            dynamicOutput.add(
+                    bottomPanel,
+                    BorderLayout.SOUTH
+            );
+            
+            Dimension currentSize = output.getSize();
 
-        output.removeAll();
+            output.setPreferredSize(currentSize);
 
-        output.setLayout(new BorderLayout());
+            output.removeAll();
 
-        output.add(
-                new JScrollPane(dynamicOutput),
-                BorderLayout.CENTER
-        );
+            output.setLayout(new BorderLayout());
 
-        output.revalidate();
-        output.repaint();
+            output.add(
+                    new JScrollPane(dynamicOutput),
+                    BorderLayout.CENTER
+            );
+
+            output.revalidate();
+            output.repaint();
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, "Please enter a valid time quntum!");
+            JOptionPane.showMessageDialog(null, "Please enter a valid time quantum!");
         }
     }//GEN-LAST:event_rrbtnActionPerformed
+
+    private void restartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartActionPerformed
+
+        // TODO add your handling code here:
+        while(!hold.isEmpty()){
+            hold.dequeue();
+        }
+        
+        Dimension currentSize = input.getSize();
+
+        input.setPreferredSize(currentSize);
+        
+        input.removeAll();
+        input.revalidate();
+        input.repaint();
+    }//GEN-LAST:event_restartActionPerformed
+
+    private void terminateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_terminateActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null, "Thank you for using our program. Goodbye!");
+        System.exit(0);
+    }//GEN-LAST:event_terminateActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if (processNameuals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new FCFSJFrame().setVisible(true));
@@ -523,17 +769,23 @@ public class FCFSJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField arrivalTime;
     private javax.swing.JTextField burstTime;
     private javax.swing.JPanel config;
+    private javax.swing.JScrollPane dynamicInput;
     private javax.swing.JScrollPane dynamicOutput;
     private javax.swing.JButton fcfsbtn;
+    private javax.swing.JPanel input;
     private javax.swing.JButton insert;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel output;
     private javax.swing.JTextField processName;
+    private javax.swing.JButton restart;
     private javax.swing.JButton rrbtn;
     private javax.swing.JButton sjnbtn;
+    private javax.swing.JButton terminate;
     // End of variables declaration//GEN-END:variables
 }
