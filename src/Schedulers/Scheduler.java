@@ -76,5 +76,9 @@ public abstract class Scheduler {
         }
         this.averageTurnAroundTime = (double) totalTurnAroundTime / numProcess;
     }
+    
+    public int getTimeQuantum(){
+        return this.timeQuantum;
+    }
 }
 

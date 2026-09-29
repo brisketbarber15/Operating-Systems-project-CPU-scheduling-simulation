@@ -126,7 +126,7 @@ public class HomeScreen extends javax.swing.JFrame {
 
     private void ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonActionPerformed
         // TODO add your handling code here:
-        FCFSJFrame frame = new FCFSJFrame();
+        MainScreen frame = new MainScreen();
         frame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_ButtonActionPerformed

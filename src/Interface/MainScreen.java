@@ -24,9 +24,9 @@ import java.awt.Font;
 import java.awt.Dimension;
 import ProcessQueue.*;
 import Schedulers.*;
-public class FCFSJFrame extends javax.swing.JFrame {
+public class MainScreen extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FCFSJFrame.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainScreen.class.getName());
     
     private HoldQueue hold = new HoldQueue();
     private FirstComeFirstServed fcfs;
@@ -37,7 +37,7 @@ public class FCFSJFrame extends javax.swing.JFrame {
     /**
      * Creates new form FCFSJFrame
      */
-    public FCFSJFrame() {
+    public MainScreen() {
         initComponents();
         
         String[] columns = {
@@ -84,7 +84,7 @@ public class FCFSJFrame extends javax.swing.JFrame {
 
         config.setBorder(javax.swing.BorderFactory.createTitledBorder("Process Configuration"));
 
-        jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel1.setText("Add Process");
 
         jLabel2.setText("Proces Name:");
@@ -99,7 +99,7 @@ public class FCFSJFrame extends javax.swing.JFrame {
         insert.setText("Add");
         insert.addActionListener(this::insertActionPerformed);
 
-        jLabel5.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel5.setText("Schedule With");
 
         fcfsbtn.setText("First Come First Served");
@@ -280,7 +280,7 @@ public class FCFSJFrame extends javax.swing.JFrame {
             
             JLabel title = new JLabel();
             title.setText("Input List");
-            title.setFont(new Font("Arial", Font.PLAIN, 18));
+            title.setFont(new Font("Arial", Font.BOLD, 20));
             
             JPanel dynamicInput = new JPanel();
             dynamicInput.setLayout(new BorderLayout());
@@ -314,305 +314,9 @@ public class FCFSJFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please enter a valid input!");
         }
     }//GEN-LAST:event_insertActionPerformed
-
-    private void fcfsbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fcfsbtnActionPerformed
-        // TODO add your handling code here:
-        if(hold.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Please enter processes first!");
-            return;
-        }
-        fcfs = new FirstComeFirstServed();
-        fcfs.schedule(hold);
-
-        FinishedQueue finishedProcesses = fcfs.getFinishedProcesses();
-        GanttChart[] ganttChart = fcfs.getGanttChart();
-
-        String[] columns = {
-            "Process Name",
-            "Arrival Time",
-            "Burst Time",
-            "Start Time",
-            "Waiting Time"
-        };
-
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        JTable table = new JTable(model);
-
-        int numProcess = finishedProcesses.getSize();
-        for(int i=0; i<numProcess; i++){
-            ProcessControlBlock process = finishedProcesses.dequeue();
-
-            model.addRow(new Object[]{
-                process.getProcessName(),
-                process.getArrivalTime(),
-                process.getBurstTime(),
-                process.getStartTime(),
-                process.getWaitingTime()
-            });
-            
-            finishedProcesses.enqueue(process);
-        }
-        
-        JLabel method = new JLabel();
-        method.setText("First Come First Served");
-        method.setFont(new Font("Arial", Font.BOLD, 20));
-
-        JPanel ganttPanel = new JPanel(new GridLayout(1, 0));
-        JPanel timePanel = new JPanel(new GridLayout(1, 0));
-
-        JLabel startLabel = new JLabel(
-                String.valueOf(ganttChart[0].getStartTime()),
-                SwingConstants.LEFT
-        );
-
-        timePanel.add(startLabel);
-
-        for(GanttChart entry : ganttChart){
-            if (entry == null) {
-                break;
-            }
-
-            JLabel cell = new JLabel(
-                    entry.getProcessName(),
-                    SwingConstants.CENTER
-            );
-            cell.setBorder(
-                    BorderFactory.createLineBorder(Color.BLACK)
-            );
-
-            ganttPanel.add(cell);
-            
-            JLabel timeLabel = new JLabel(
-                    String.valueOf(entry.getCompletionTime()),
-                    SwingConstants.CENTER
-            );
-
-            timePanel.add(timeLabel);
-        }
-
-        JPanel dynamicOutput = new JPanel();
-        dynamicOutput.setLayout(new BorderLayout());
-        
-        dynamicOutput.add(
-                method,
-                BorderLayout.NORTH
-        );
-        
-        // =======================================
-        
-        JPanel outputListPanel = new JPanel(new BorderLayout());
-        
-        JLabel ol = new JLabel();
-        ol.setText("Output List");
-        method.setFont(new Font("Arial", Font.PLAIN, 12));
-        
-        outputListPanel.add(
-                ol,
-                BorderLayout.NORTH
-        );
-
-        outputListPanel.add(
-                new JScrollPane(table),
-                BorderLayout.SOUTH
-        );
-        
-        dynamicOutput.add(
-                outputListPanel,
-                BorderLayout.SOUTH
-        );
-        
-        // =======================================================
-        JPanel chartPanel = new JPanel(new BorderLayout());
-        
-        JLabel gc = new JLabel();
-        gc.setText("Gantt Chart");
-        method.setFont(new Font("Arial", Font.PLAIN, 12));
-        
-        chartPanel.add(
-                gc,
-                BorderLayout.NORTH
-        );
-        
-        chartPanel.add(new JScrollPane(
-                        ganttPanel,
-                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-                ),
-                BorderLayout.CENTER
-        );
-        
-        chartPanel.add(new JScrollPane(
-                        timePanel,
-                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-                ),
-                BorderLayout.SOUTH
-        );
-
-        dynamicOutput.add(
-                chartPanel,
-                BorderLayout.CENTER
-        );
-        // ===============================================================
-        Dimension currentSize = output.getSize();
-
-        output.setPreferredSize(currentSize);
-
-        output.removeAll();
-
-        output.setLayout(new BorderLayout());
-
-        output.add(
-                new JScrollPane(dynamicOutput),
-                BorderLayout.CENTER
-        );
-
-        output.revalidate();
-        output.repaint();
-    }//GEN-LAST:event_fcfsbtnActionPerformed
-
-    private void sjnbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sjnbtnActionPerformed
-        // TODO add your handling code here:
-        if(hold.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Please enter processes first!");
-            return;
-        }
-        sjn = new ShortestJobNext();
-        sjn.schedule(hold);
-        
-        FinishedQueue finishedProcesses = sjn.getFinishedProcesses();
-        GanttChart[] ganttChart = sjn.getGanttChart();
-
-        String[] columns = {
-            "Process Name",
-            "Arrival Time",
-            "Burst Time",
-            "Start Time",
-            "Waiting Time"
-        };
-
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        JTable table = new JTable(model);
-
-        int numProcess = finishedProcesses.getSize();
-        for(int i=0; i<numProcess; i++){
-            ProcessControlBlock process = finishedProcesses.dequeue();
-
-            model.addRow(new Object[]{
-                process.getProcessName(),
-                process.getArrivalTime(),
-                process.getBurstTime(),
-                process.getStartTime(),
-                process.getWaitingTime()
-            });
-            
-            finishedProcesses.enqueue(process);
-        }
-        
-        JLabel method = new JLabel();
-        method.setText("Shortest Job Next");
-        method.setFont(new Font("Arial", Font.PLAIN, 18));
-
-        JPanel ganttPanel = new JPanel(new GridLayout(1, 0));
-        JPanel timePanel = new JPanel(new GridLayout(1, 0));
-
-        JLabel startLabel = new JLabel(
-                String.valueOf(ganttChart[0].getStartTime()),
-                SwingConstants.LEFT
-        );
-
-        timePanel.add(startLabel);
-
-        for(GanttChart entry : ganttChart){
-            if (entry == null) {
-                break;
-            }
-
-            JLabel cell = new JLabel(
-                    entry.getProcessName(),
-                    SwingConstants.CENTER
-            );
-            cell.setBorder(
-                    BorderFactory.createLineBorder(Color.BLACK)
-            );
-
-            ganttPanel.add(cell);
-            
-            JLabel timeLabel = new JLabel(
-                    String.valueOf(entry.getCompletionTime()),
-                    SwingConstants.CENTER
-            );
-
-            timePanel.add(timeLabel);
-        }
-
-        JPanel dynamicOutput = new JPanel();
-        dynamicOutput.setLayout(new BorderLayout());
-        
-        dynamicOutput.add(
-                method,
-                BorderLayout.NORTH
-        );
-
-        dynamicOutput.add(
-                new JScrollPane(table),
-                BorderLayout.CENTER
-        );
-
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        
-        bottomPanel.add(new JScrollPane(
-                        ganttPanel,
-                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-                ),
-                BorderLayout.CENTER
-        );
-        
-        bottomPanel.add(new JScrollPane(
-                        timePanel,
-                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-                ),
-                BorderLayout.SOUTH
-        );
-
-        dynamicOutput.add(
-                bottomPanel,
-                BorderLayout.SOUTH
-        );
-        
-        Dimension currentSize = output.getSize();
-
-        output.setPreferredSize(currentSize);
-
-        output.removeAll();
-
-        output.setLayout(new BorderLayout());
-
-        output.add(
-                new JScrollPane(dynamicOutput),
-                BorderLayout.CENTER
-        );
-
-        output.revalidate();
-        output.repaint();
-    }//GEN-LAST:event_sjnbtnActionPerformed
-
-    private void rrbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rrbtnActionPerformed
-        // TODO add your handling code here:
-        if(hold.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Please enter processes first!");
-            return;
-        }
-        try{
-            int tq = Integer.parseInt(JOptionPane.showInputDialog("Enter time quantum"));
-            rr = new RoundRobin(tq);
-            rr.schedule(hold);
-            
-            FinishedQueue finishedProcesses = rr.getFinishedProcesses();
-            GanttChart[] ganttChart = rr.getGanttChart();
-
+// =============================================================================================================================
+    private JTable createTable(FinishedQueue finishedProcesses, boolean isRR){
+        if(isRR){
             String[] columns = {
                 "Process Name",
                 "Arrival Time",
@@ -640,100 +344,315 @@ public class FCFSJFrame extends javax.swing.JFrame {
 
                 finishedProcesses.enqueue(process);
             }
+            
+            return table;
+        }
+        
+        String[] columns = {
+            "Process Name",
+            "Arrival Time",
+            "Burst Time",
+            "Start Time",
+            "Waiting Time"
+        };
 
-            JLabel method = new JLabel();
-            method.setText("Round Robin");
-            method.setFont(new Font("Arial", Font.PLAIN, 18));
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        JTable table = new JTable(model);
 
-            JPanel ganttPanel = new JPanel(new GridLayout(1, 0));
-            JPanel timePanel = new JPanel(new GridLayout(1, 0));
+        int numProcess = finishedProcesses.getSize();
+        for(int i=0; i<numProcess; i++){
+            ProcessControlBlock process = finishedProcesses.dequeue();
 
-            JLabel startLabel = new JLabel(
-                    String.valueOf(ganttChart[0].getStartTime()),
-                    SwingConstants.LEFT
+            model.addRow(new Object[]{
+                process.getProcessName(),
+                process.getArrivalTime(),
+                process.getBurstTime(),
+                process.getStartTime(),
+                process.getWaitingTime()
+            });
+
+            finishedProcesses.enqueue(process);
+        }
+        
+        return table;
+    }
+    
+    private JLabel createTitle(String title, int size){
+        JLabel method = new JLabel();
+        method.setText(title);
+        method.setFont(new Font("Arial", Font.BOLD, size));
+        
+        return method;
+    }
+    
+    private JPanel createGanttPanel(GanttChart[] ganttChart){
+        JPanel ganttPanel = new JPanel(new GridLayout(1, 0));
+        for(GanttChart entry : ganttChart){
+            if (entry == null) {
+                break;
+            }
+
+            JLabel cell = new JLabel(
+                    entry.getProcessName(),
+                    SwingConstants.CENTER
+            );
+            cell.setBorder(
+                    BorderFactory.createLineBorder(Color.BLACK)
             );
 
-            timePanel.add(startLabel);
+            ganttPanel.add(cell);
+        }
+        
+        return ganttPanel;
+    }
+    
+    private JPanel createTimePanel(GanttChart[] ganttChart){
+        JPanel timePanel = new JPanel(new GridLayout(1, 0));
 
-            for(GanttChart entry : ganttChart){
-                if (entry == null) {
-                    break;
-                }
+        JLabel startLabel = new JLabel(
+                String.valueOf(ganttChart[0].getStartTime()),
+                SwingConstants.LEFT
+        );
 
-                JLabel cell = new JLabel(
-                        entry.getProcessName(),
-                        SwingConstants.CENTER
+        timePanel.add(startLabel);
+        
+        for(int i=0; i<ganttChart.length; i++){
+            GanttChart entry = ganttChart[i];
+            
+            if(entry == null){
+                break;
+            }
+            
+            JLabel timeLabel;
+            if(ganttChart[i+1] == null){
+                timeLabel = new JLabel(
+                    String.valueOf(entry.getCompletionTime()),
+                    SwingConstants.RIGHT
                 );
-                cell.setBorder(
-                        BorderFactory.createLineBorder(Color.BLACK)
-                );
-
-                ganttPanel.add(cell);
-                
-                JLabel timeLabel = new JLabel(
+            }else{
+                timeLabel = new JLabel(
                     String.valueOf(entry.getCompletionTime()),
                     SwingConstants.CENTER
                 );
-
-                timePanel.add(timeLabel);
             }
 
-            JPanel dynamicOutput = new JPanel();
-            dynamicOutput.setLayout(new BorderLayout());
-
-            dynamicOutput.add(
-                    method,
-                    BorderLayout.NORTH
-            );
-
-            dynamicOutput.add(
-                    new JScrollPane(table),
-                    BorderLayout.SOUTH
-            );
-
-            JPanel bottomPanel = new JPanel(new BorderLayout());
+            timePanel.add(timeLabel);
+        }
         
-            bottomPanel.add(new JScrollPane(
-                            ganttPanel,
-                            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-                    ),
-                    BorderLayout.CENTER
-            );
+        return timePanel;
+    }
+    
+    private JPanel createOutputListPanel(JLabel ol, JTable table){
+        JPanel outputListPanel = new JPanel(new BorderLayout());
+        
+        outputListPanel.add(
+                ol,
+                BorderLayout.NORTH
+        );
 
-            bottomPanel.add(new JScrollPane(
-                            timePanel,
-                            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-                    ),
-                    BorderLayout.SOUTH
-            );
+        outputListPanel.add(
+                new JScrollPane(table),
+                BorderLayout.SOUTH
+        );
+        
+        return outputListPanel;
+    }
+    
+    private JPanel createDynamicOutput(JLabel method, JPanel outputListPanel, JPanel chartPanel){
+        JPanel dynamicOutput = new JPanel();
+        dynamicOutput.setLayout(new BorderLayout());
+        
+        dynamicOutput.add(
+                method,
+                BorderLayout.NORTH
+        );
+        
+        
+        dynamicOutput.add(
+                outputListPanel,
+                BorderLayout.SOUTH
+        );
+        
+        dynamicOutput.add(
+                chartPanel,
+                BorderLayout.CENTER
+        );
+        
+        return dynamicOutput;
+    }
+    
+    private JPanel createChartPanel(JLabel gc, JPanel ganttPanel, JPanel timePanel){
+        JPanel chartPanel = new JPanel(new BorderLayout());
+        chartPanel.add(
+                gc,
+                BorderLayout.NORTH
+        );
+        
+        chartPanel.add(new JScrollPane(
+                        ganttPanel,
+                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                ),
+                BorderLayout.CENTER
+        );
+        
+        chartPanel.add(new JScrollPane(
+                        timePanel,
+                        JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                ),
+                BorderLayout.SOUTH
+        );
+        return chartPanel;
+    }
+//=========================================================================================================================
+    
+    private void fcfsbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fcfsbtnActionPerformed
+        // TODO add your handling code here:
+        if(hold.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter processes first!");
+            return;
+        }
+        fcfs = new FirstComeFirstServed();
+        fcfs.schedule(hold);
 
-            dynamicOutput.add(
-                    bottomPanel,
-                    BorderLayout.SOUTH
-            );
-            
-            Dimension currentSize = output.getSize();
+        FinishedQueue finishedProcesses = fcfs.getFinishedProcesses();
+        GanttChart[] ganttChart = fcfs.getGanttChart();
 
-            output.setPreferredSize(currentSize);
+        JLabel method = createTitle("First Come First Served", 20);
+        
+        JLabel ol = createTitle("Output Table", 18);
+        JTable table = createTable(finishedProcesses, false);
+        JPanel outputListPanel = createOutputListPanel(ol, table);
 
-            output.removeAll();
+        JLabel gc = createTitle("Gantt Chart", 18);
+        JPanel ganttPanel = createGanttPanel(ganttChart);
+        JPanel timePanel = createTimePanel(ganttChart);
+        JPanel chartPanel = createChartPanel(gc, ganttPanel, timePanel);
+        
+        JPanel dynamicOutput = createDynamicOutput(method, outputListPanel, chartPanel);
+       
+        JPanel metrics = new JPanel(new BorderLayout());
+        JLabel metricsLabel = createTitle("Mertrics", 18);
+        JLabel measurements = createTitle("Average waiting time: " + fcfs.getAverageWaitingTime(), 14);
+        
+        metrics.add(metricsLabel, BorderLayout.NORTH);
+        metrics.add(measurements, BorderLayout.CENTER);
+        
+        addToOutput(dynamicOutput, metrics);
+    }//GEN-LAST:event_fcfsbtnActionPerformed
 
-            output.setLayout(new BorderLayout());
+    private void sjnbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sjnbtnActionPerformed
+        // TODO add your handling code here:
+        if(hold.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter processes first!");
+            return;
+        }
+        sjn = new ShortestJobNext();
+        sjn.schedule(hold);
+        
+        FinishedQueue finishedProcesses = sjn.getFinishedProcesses();
+        GanttChart[] ganttChart = sjn.getGanttChart();
 
-            output.add(
-                    new JScrollPane(dynamicOutput),
-                    BorderLayout.CENTER
-            );
+        JLabel method = createTitle("Shortest Job Next", 20);
+        
+        JLabel ol = createTitle("Output Table", 18);
+        JTable table = createTable(finishedProcesses, false);
+        JPanel outputListPanel = createOutputListPanel(ol, table);
 
-            output.revalidate();
-            output.repaint();
+        JLabel gc = createTitle("Gantt Chart", 18);
+        JPanel ganttPanel = createGanttPanel(ganttChart);
+        JPanel timePanel = createTimePanel(ganttChart);
+        JPanel chartPanel = createChartPanel(gc, ganttPanel, timePanel);
+        
+        
+        JPanel dynamicOutput = createDynamicOutput(method, outputListPanel, chartPanel);
+        
+        JPanel metrics = new JPanel(new BorderLayout());
+        JLabel metricsLabel = createTitle("Mertrics", 18);
+        JLabel measurements = createTitle("Average waiting time: " + sjn.getAverageWaitingTime(), 14);
+        
+        metrics.add(metricsLabel, BorderLayout.NORTH);
+        metrics.add(measurements, BorderLayout.CENTER);
+        
+        addToOutput(dynamicOutput, metrics);
+    }//GEN-LAST:event_sjnbtnActionPerformed
+
+    private void rrbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rrbtnActionPerformed
+        // TODO add your handling code here:
+        if(hold.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter processes first!");
+            return;
+        }
+        try{
+            int tq = Integer.parseInt(JOptionPane.showInputDialog("Enter time quantum: "));
+            rr = new RoundRobin(tq);
+            rr.schedule(hold);
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Please enter a valid time quantum!");
         }
+
+
+        FinishedQueue finishedProcesses = rr.getFinishedProcesses();
+        GanttChart[] ganttChart = rr.getGanttChart();
+
+
+
+        JLabel method = createTitle("Round Robin", 20);
+
+        JLabel ol = createTitle("Output Table", 18);
+        JTable table = createTable(finishedProcesses, true);
+        JPanel outputListPanel = createOutputListPanel(ol, table);
+
+        JLabel gc = createTitle("Gantt Chart", 18);
+        JPanel ganttPanel = createGanttPanel(ganttChart);
+        JPanel timePanel = createTimePanel(ganttChart);
+        JPanel chartPanel = createChartPanel(gc, ganttPanel, timePanel);
+
+        JPanel dynamicOutput = createDynamicOutput(method, outputListPanel, chartPanel);
+
+
+        JPanel metrics = new JPanel(new BorderLayout());
+        JLabel metricsLabel = createTitle("Mertrics", 18);
+        JLabel awt = createTitle("Average waiting time: " + rr.getAverageWaitingTime(), 14);
+        JLabel att = createTitle("Average turn around time: " + rr.getAverageTurnAroundTime(), 14);
+        JLabel timeQuantum = createTitle("Time quantum: " + rr.getTimeQuantum(), 14);
+        
+        JPanel measurements = new JPanel(new BorderLayout());
+        measurements.add(awt, BorderLayout.NORTH);
+        measurements.add(att, BorderLayout.CENTER);
+
+        metrics.add(metricsLabel, BorderLayout.NORTH);
+        metrics.add(measurements, BorderLayout.CENTER);
+        metrics.add(timeQuantum, BorderLayout.SOUTH);
+
+        addToOutput(dynamicOutput, metrics);
+        
     }//GEN-LAST:event_rrbtnActionPerformed
 
+    private void addToOutput(JPanel dynamicOutput, JPanel metrics){
+        Dimension currentSize = output.getSize();
+
+        output.setPreferredSize(currentSize);
+
+        output.removeAll();
+
+        output.setLayout(new BorderLayout());
+
+        output.add(
+                new JScrollPane(dynamicOutput),
+                BorderLayout.CENTER
+        );
+        
+        output.add(
+                metrics,
+                BorderLayout.SOUTH
+        );
+
+        output.revalidate();
+        output.repaint();
+    }
+    
     private void restartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartActionPerformed
 
         // TODO add your handling code here:
@@ -741,13 +660,21 @@ public class FCFSJFrame extends javax.swing.JFrame {
             hold.dequeue();
         }
         
-        Dimension currentSize = input.getSize();
-
-        input.setPreferredSize(currentSize);
+        Dimension currentSize1 = input.getSize();
+        input.setPreferredSize(currentSize1);
         
         input.removeAll();
         input.revalidate();
         input.repaint();
+        
+        tableModel.setRowCount(0);
+        
+        Dimension currentSize2 = output.getSize();
+        output.setPreferredSize(currentSize2);
+        
+        output.removeAll();
+        output.revalidate();
+        output.repaint();
     }//GEN-LAST:event_restartActionPerformed
 
     private void terminateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_terminateActionPerformed
@@ -762,7 +689,7 @@ public class FCFSJFrame extends javax.swing.JFrame {
     public static void main(String args[]) {
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new FCFSJFrame().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new MainScreen().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
